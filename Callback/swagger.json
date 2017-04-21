@@ -1,0 +1,658 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Genesys Mobile Services contains multiple APIs, each dedicated to performing certain tasks as described below. Select the API name for a more detailed examination of the operations and responses they use.",
+        "version": "0.0.1",
+        "title": "GMS API Documentation",
+        "contact": {
+            "email": "jean-marc.taillant@genesys.com"
+        }
+    },
+    "basePath": "/",
+    "produces": [
+        "application/json"
+    ],
+    "schemes": [
+        "http",
+        "https"
+    ],
+    "tags": [
+      {
+        "name": "CLOUD Callback API",
+        "description": "The Callback API for PureEngage Cloud",
+        "externalDocs": {
+    	    "description": "Callback Documentation",
+    	    "url": "https://developer.genesys.com/api/rest/v2/callback/index.html"
+        }
+      }
+    ],    
+    "paths": {	
+        "/gms-cb/1/service/callback/{queue name}": {
+            "post": {
+                "tags": [
+                    "CLOUD Callback API"
+                ],
+                "description": "Request callback to specified customer's phone number",
+                "parameters": [
+                    {
+                        "name": "apikey",
+                        "in": "header",
+                        "description": "API access key supplied by Genesys for specific environment",
+                        "type": "string",
+                        "required": false
+                    },
+                    {
+                        "name": "queue name",
+                        "in": "path",
+                        "description": "Name of the destination queue. For example: CallbackTest_Queue_1.",
+                        "type": "string",
+                        "required": true
+                    },
+                    {
+                        "name": "_customer_number",
+                        "in": "formData",
+                        "description": "Customer phone number in E.164 format WITHOUT LEADING PLUS (+) in front of the country code",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "_target",
+                        "in": "formData",
+                        "description": "Skill expression used to allocate the agent",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "_rp",
+                        "in": "formData",
+                        "description": "The routing point to use for making the outbound call. Routing point should be configured in DesignerCallback transaction list object with attributes to use for callback",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "_desired_time",
+                        "in": "formData",
+                        "description": "If specified callback execution would be scheduled at specified time in UTC format (YYYY-MM-ddTHH:mm:ss.SSSZ). Note: actual execution time would depend on agent availability",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "_cb_offer_type",
+                        "in": "formData",
+                        "description": "Specify type of callback offer presented: ASAP, SCHEDULED, COMBINED_SCHEDULED_AND_ASAP",
+                        "required": false,
+                        "type": "string",
+                        "enum": [
+                          "ASAP",
+                          "SCHEDULED",
+                          "COMBINED_SCHEDULED_AND_ASAP"
+                        ]
+                    },
+                    {
+                        "name": "_language",
+                        "in": "formData",
+                        "description": "Preferred language for voice prompts in Designer's format",
+                        "default": "en-US",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "_offer_timing",
+                        "in": "formData",
+                        "description": "Specify type of callback offer presented: ASAP, SCHEDULED, COMBINED_SCHEDULED_AND_ASAP",
+                        "required": false,
+                        "type": "string",
+                        "enum": [
+                          "OFF-HOURS",
+                          "ON-HOURS"
+                        ]
+                    },
+                    {
+                        "name": "_priority",
+                        "in": "formData",
+                        "description": "Sets initial virtual interaction queuing priority. Associated routing strategy may change priority according to queue specific business rules. For scheduled callbacks scenarios it is recommended to set _priority higher then any other type of interactions in the queue to make sure desired/promised time would be honored.",
+                        "required": false,
+                        "default": "1",
+                        "type": "string"
+                    },
+                    {
+                        "name": "business_data_key1",
+                        "in": "formData",
+                        "description": "key names without underscore at the beginning would be stored as part of the service data and later attached to the call before it is delivered to the agent.",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "business_data_key2",
+                        "in": "formData",
+                        "description": "same as above",
+                        "required": false,
+                        "type": "string"
+                    }
+                    
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/CloudCallbackAnswer"
+                        }
+                    },
+                    "500": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/CloudCallbackError"
+                        }
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "CLOUD Callback API"
+                ],
+                "description": "Query callback state by customer number",
+                "parameters": [
+                    {
+                        "name": "apikey",
+                        "in": "header",
+                        "description": "API access key supplied by Genesys for specific environment",
+                        "type": "string",
+                        "required": false
+                    },
+                    {
+                        "name": "queue name",
+                        "in": "path",
+                        "description": "Name of the destination queue. For example: CallbackTest_Queue_1.",
+                        "type": "string",
+                        "required": true
+                    },
+                    {
+                        "name": "_customer_number",
+                        "in": "formData",
+                        "description": "Customer's phone number used to request/schedule callback",
+                        "required": true,
+                        "type": "string"
+                    }
+                    
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/definitions/CloudCallbackItem"
+                            }
+                          }
+                    },
+                    "500": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/CloudCallbackError"
+                        }
+                    }
+                }
+            }
+        },
+        "/gms-cb/1/service/callback/{queue name}/{service id}": {
+            "delete": {
+                "tags": [
+                    "CLOUD Callback API"
+                ],
+                "description": "Delete/Cancel callback using Service ID",
+                "parameters": [
+                    {
+                        "name": "apikey",
+                        "in": "header",
+                        "description": "API access key supplied by Genesys for specific environment",
+                        "type": "string",
+                        "required": false
+                    },
+                    {
+                        "name": "queue name",
+                        "in": "path",
+                        "description": "Name of the destination queue. For example: CallbackTest_Queue_1.",
+                        "type": "string",
+                        "required": true
+                    },
+                    {
+                        "name": "service id",
+                        "in": "path",
+                        "description": "Service id uniquely identifying callback request. It is returned back to the client as _id attribute when callback request is accepted",
+                        "required": true,
+                        "type": "string"
+                    }
+                    
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/CloudDeleteCallbackAnswer"
+                        }
+                    },
+                    "500": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/CloudCallbackError"
+                        }
+                    }
+                }
+            }
+        },
+        "/gms-cb/1/service/callback/{queue name}/availability": {
+            "get": {
+                "tags": [
+                    "CLOUD Callback API"
+                ],
+                "description": "Query available scheduled callback slots for a given queue - v1",
+                "parameters": [
+                    {
+                        "name": "apikey",
+                        "in": "header",
+                        "description": "API access key supplied by Genesys for specific environment",
+                        "type": "string",
+                        "required": false
+                    },
+                    {
+                        "name": "queue name",
+                        "in": "path",
+                        "description": "Name of the destination queue. For example: CallbackTest_Queue_1.",
+                        "type": "string",
+                        "required": true
+                    },
+                    {
+                        "name": "timestamp",
+                        "in": "query",
+                        "description": "Start date is specified in 'ISO 8601' format, using UTC as timezone: 'YYYY-MM-ddTHH:mm:ss.SSSZ'. If not specified then it is assumed to be now.",
+                        "default": "2014-12-19T18:00:00.000Z",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "number-of-days",
+                        "in": "query",
+                        "description": "Specifies how many days ahead to include into availability interval beginning form the 'start' time. Used as an alternative to the end date. If neither 'end', nor 'number-of-days' is specified, then end date is assumed to be the same as start date.",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "end",
+                        "in": "query",
+                        "description": "nd date is specified in 'ISO 8601' format, using UTC as timezone: 'YYYY-MM-ddTHH:mm:ss.SSSZ'. If neither 'end', nor 'number-of-days' is specified, then end date is assumed to be the same as start date.",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "max-time-slots",
+                        "in": "query",
+                        "description": "Maximum number of time slots to be included in the response when office is open and capacity is above zero. It could be used to improve performance of the query over a lengthy period of time.",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A list of time slots"
+                    }
+                }
+            }
+        },
+        "/gms-cb/2/service/callback/{queue name}/availability": {
+          "get": {
+                "tags": [
+                    "CLOUD Callback API"
+                ],
+                "description": "Query available scheduled callback slots for a given queue in any Time Zone - v2",
+                "parameters": [
+                    {
+                        "name": "apikey",
+                        "in": "header",
+                        "description": "API access key supplied by Genesys for specific environment",
+                        "type": "string",
+                        "required": false
+                    },
+                    {
+                        "name": "queue name",
+                        "in": "path",
+                        "description": "Name of the destination queue. For example: CallbackTest_Queue_1.",
+                        "type": "string",
+                        "required": true
+                    },
+                    {
+                        "name": "timestamp",
+                        "in": "query",
+                        "description": "Start date is specified in 'ISO 8601' format, using UTC as timezone: 'YYYY-MM-ddTHH:mm:ss.SSSZ'. If not specified then it is assumed to be now.",
+                        "default": "2014-12-19T18:00:00.000Z",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "number-of-days",
+                        "in": "query",
+                        "description": "Specifies how many days ahead to include into availability interval beginning form the 'start' time. Used as an alternative to the end date. If neither 'end', nor 'number-of-days' is specified, then end date is assumed to be the same as start date.",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "end",
+                        "in": "query",
+                        "description": "nd date is specified in 'ISO 8601' format, using UTC as timezone: 'YYYY-MM-ddTHH:mm:ss.SSSZ'. If neither 'end', nor 'number-of-days' is specified, then end date is assumed to be the same as start date.",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "max-time-slots",
+                        "in": "query",
+                        "description": "Maximum number of time slots to be included in the response when office is open and capacity is above zero. It could be used to improve performance of the query over a lengthy period of time.",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "TZ",
+                        "in": "query",
+                        "description": "Three letter timezone name. For example: PST.",
+                        "default":  "GMT",
+                        "required": false,
+                        "type": "string"
+                    }
+                    
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/CloudQueryCallbackV2Answer"
+                        }
+                    }
+                }
+          }
+        },
+        "/gms-cb/1/service/{queue-name}-hours":{
+            "get": {
+                "tags": [
+                    "CLOUD Callback API"
+                ],
+                "description": "Query to check if office is open right now",
+                "parameters": [
+                    {
+                        "name": "apikey",
+                        "in": "header",
+                        "description": "API access key supplied by Genesys for specific environment",
+                        "type": "string",
+                        "required": false
+                    },
+                    {
+                        "name": "queue-name",
+                        "in": "path",
+                        "description": "Name of the destination queue. For example: CallbackTest_Queue_1.",
+                        "type": "string",
+                        "required": true
+                    }
+                    
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/CloudQuerOfficeAnswer"
+                        }
+                    }
+                }
+            }
+        },
+        "/gms-cb/1/service/ewt-for-vq?name={virtual queue name}": {
+            "get": {
+                "tags": [
+                    "CLOUD Callback API"
+                ],
+                "description": "Query Expected Wait Time (EWT) for a given queue",
+                "parameters": [
+                    {
+                        "name": "apikey",
+                        "in": "header",
+                        "description": "API access key supplied by Genesys for specific environment",
+                        "type": "string",
+                        "required": false
+                    },
+                    {
+                        "name": "virtual queue name",
+                        "in": "path",
+                        "description": "Name of the destination queue. For example: CallbackTest_Queue_1",
+                        "type": "string",
+                        "required": true
+                    }
+                    
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The Estimated Waiting time",
+                        "schema": {
+                            "$ref": "#/definitions/EWT"
+                        }
+                    }
+                }
+            }
+        },
+        "/gms-cb/1a/service-mashup/queue-status?name={virtual queue name}": {
+            "get": {
+                "tags": [
+                    "CLOUD Callback API"
+                ],
+                "description": "Query Expected Wait Time (EWT) for a given queue",
+                "parameters": [
+                    {
+                        "name": "apikey",
+                        "in": "header",
+                        "description": "API access key supplied by Genesys for specific environment",
+                        "type": "string",
+                        "required": false
+                    },
+                    {
+                        "name": "virtual queue name",
+                        "in": "path",
+                        "description": "Name of the destination queue. For example: CallbackTest_Queue_1",
+                        "type": "string",
+                        "required": true
+                    }
+                    
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Status of the queue: _isAvailable: true if queue is operational and we are within business hours for this queue; false - if queue is not operational OR we are outside of business hours for this queue. If value is 'false' callback requests are not accepted _status: indicates if we are within business hours for this queue at the time of the request _ewt: current value of EWT for the given queue in seconds. Float number. _isScheduledAvailable: true - scheduled callbacks are accepted, false - scheduled callbacks are not accepted",
+                        "schema": {
+                            "$ref": "#/definitions/QueueStatus"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "EWT": {
+            "properties": {
+                "ewt": {
+                    "type": "number",
+                    "description": ""
+                }
+            }
+        },
+        "QueueStatus":{
+            "properties": {
+                "_isAvailable": {
+                    "type": "boolean",
+                    "description": "true if queue is operational and we are within business hours for this queue; false - if queue is not operational OR we are outsode of business hours for this queue. If value is 'false' callback requests are not accepted_status: indic"
+                },
+                "_status": {
+                    "type": "string",
+                    "description": "Indicates if we are within business hours for this queue at the time of the request",
+                    "enum": [
+                        "WithinHoops",
+                        "OutOfHoops"
+    
+                    ]
+                },
+                "_ewt": {
+                    "type": "number",
+                    "description": "true if queue is operational and we are within business hours for this queue; false - if queue is not operational OR we are outsode of business hours for this queue. If value is 'false' callback requests are not accepted_status: indic"
+                },
+                "_isScheduledAvailable": {
+                    "type": "boolean",
+                    "description": "true if queue is operational and we are within business hours for this queue; false - if queue is not operational OR we are outsode of business hours for this queue. If value is 'false' callback requests are not accepted_status: indic"
+                }
+            }
+        },
+        "CloudCallbackItem": {
+            "properties": {
+                "_desired_time": {
+                    "type": "string",
+                    "description": ""
+                },
+                 "_callback_state": {
+                    "type": "string",
+                    "description": ""
+                },
+                "_expiration_time": {
+                    "type": "string",
+                    "description": ""
+                },
+                "_id": {
+                    "type": "string",
+                    "description": ""
+                },              
+                "_customer_number": {
+                    "type": "string",
+                    "description": ""
+                },                
+                "_url": {
+                    "type": "string",
+                    "description": ""
+                },
+                "_callback_reason": {
+                    "type": "string",
+                    "description": ""
+                }
+            }
+        },
+        "SlotItem":{
+              "properties": {
+                "utcTime": {
+                    "type": "string",
+                    "description": ""
+                },
+                "localTime": {
+                    "type": "string",
+                    "description": ""
+                },
+                "capacity": {
+                    "type": "integer",
+                    "description": ""
+                }
+              }
+        },
+         "CloudQuerOfficeAnswer":{
+              "properties": {
+                "error": {
+                    "type": "string",
+                    "description": ""
+                },
+                "periods": {
+                    "description": "",
+                    "type": "array",
+                     "items": {
+                              "$ref": "#/definitions/PeriodItem"
+                     }
+                }
+            }
+        },
+        "PeriodItem":{
+           "properties": {
+                "start": {
+                    "type": "string",
+                    "description": ""
+                },
+                "end": {
+                    "type": "string",
+                    "description": ""
+                },
+                "tags": {
+                    "type": "object",
+                    "description": ""
+                }
+              }
+        },
+        "CloudQueryCallbackV2Answer":{
+              "properties": {
+                "slots": {
+                    "description": "",
+                    "type": "array",
+                     "items": {
+                              "$ref": "#/definitions/SlotItem"
+                     }
+                },
+                "durationMin": {
+                    "type": "integer",
+                    "description": ""
+                },
+                "timezone": {
+                    "type": "string",
+                    "description": ""
+                }
+                
+            }
+        },
+        "CloudDeleteCallbackAnswer":{
+              "properties": {
+                "_action": {
+                    "type": "string",
+                    "description": ""
+                },
+                "_ok_title": {
+                    "type": "string",
+                    "description": ""
+                },
+                "_text": {
+                    "type": "string",
+                    "description": ""
+                },
+                "_id": {
+                    "type": "string",
+                    "description": ""
+                },
+                "_dialog_id": {
+                    "type": "string",
+                    "description": ""
+                }
+                
+            }
+        },
+        "CloudCallbackAnswer":{
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "description": ""
+                },
+                "reason": {
+                    "type": "string",
+                    "description": ""
+                },
+                "_id": {
+                    "type": "string",
+                    "description": ""
+                }
+            }
+        },
+         "CloudCallbackError":{
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "description": ""
+                },
+                "exception": {
+                    "type": "string",
+                    "description": ""
+                }
+            }
+        }
+    }
+}
