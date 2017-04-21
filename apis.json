@@ -15,6 +15,14 @@
     	"cloud": true,
     	"premise": true,
     	"product": "Agent Setup"
+    },
+    {
+    	"name": "Callback",
+    	"description": "Genesys Callback API",
+    	"swagger": "Callback/swagger.json",
+    	"cloud": true,
+    	"premise": true,
+    	"product": "Genesys Mobile Engagement"
     }
   ]
 }
