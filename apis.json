@@ -1,9 +1,9 @@
 {
   "apis": [
     {
-    	"name": "WWE",
+    	"name": "Workspace",
     	"description": "The API that powers Workspace Web Edition",
-    	"swagger": "WWE/swagger.json",
+    	"swagger": "Workspace/swagger.json",
     	"cloud": true,
     	"premise": true,
     	"product": "Web Services and Applications"
