@@ -1,0 +1,916 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "0.0.1",
+    "title": "Provisioning API",
+    "description": "The provisioning service will be used to create objects in configuration server in a way that is consistent with the BEC model.\n\nThe \"users\" resource will be used to perform CRUD operations on config server person objects. Note that this API will extend the low level configuration server API to add additional functionality that will allow persons to be created in a way that makes them immediately useable in BEC. Operations on this resource may result in other configuration objects being modified as well.\n"
+  },
+  "basePath": "/provisioning/v3",
+  "schemes": [
+    "http"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "securityDefinitions": {
+    "basicAuth": {
+      "type": "basic",
+      "description": "HTTP Basic Authentication. Works over `HTTP` and `HTTPS`"
+    }
+  },
+  "tags": [
+    {
+      "name": "login",
+      "description": "Login API",
+      "externalDocs": {
+  	    "description": "Login Documentation",
+  	    "url": "https://developer.genesys.com/api/rest/v2/login/index.html"
+      }
+    },
+    {
+      "name": "users",
+      "description": "Users API",
+      "externalDocs": {
+  	    "description": "Users Documentation",
+  	    "url": "https://developer.genesys.com/api/rest/v2/voice/index.html"
+      }
+    }
+  ],
+
+  "paths": {
+    "/users": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "description": "The POST operation will create a new CfgPerson object in configuration server and configure related objects",
+        "operationId": "usersPost",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Body Data",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/usersPost"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/usersPostResponse"
+            }
+          },
+          "500": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/usersPostResponseError"
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "description": "The GET operation will fetch CfgPerson objects from configuration server, possible with filters",
+        "operationId": "usersGet",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "number",
+            "description": "Limit number of users to fetch",
+            "required": false
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "type": "number",
+            "description": "Skip first N matches"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "type": "string",
+            "description": "Sort results ascending/descending",
+            "enum": [
+              "Ascending",
+              "Descending"
+            ]
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "type": "string",
+            "description": "comma-separated list of fields to sort on, supported: firstName,lastName,userName\n"
+          },
+          {
+            "name": "filterName",
+            "in": "query",
+            "type": "string",
+            "description": "Users filter name",
+            "enum": [
+              "FirstNameOrLastNameMatches"
+            ]
+          },
+          {
+            "name": "filterParameters",
+            "in": "query",
+            "type": "string",
+            "description": "Part of users first or last name, if filterName: FirstNameOrLastNameMatches specified.\n"
+          },
+          {
+            "name": "roles",
+            "in": "query",
+            "type": "string",
+            "description": "Only fetch users with specified roles, comma-separated. Supported: ROLE_AGENT,ROLE_ADMIN\n"
+          },
+          {
+            "name": "skills",
+            "in": "query",
+            "type": "string",
+            "description": "Only fetch users with specified skills, comma-separated.\n"
+          },
+          {
+            "name": "userEnabled",
+            "in": "query",
+            "type": "boolean",
+            "description": "Fetch only enabled or disabled users."
+          },
+          {
+            "name": "userValid",
+            "in": "query",
+            "type": "string",
+            "description": "Fetch only valid or invalid users.",
+            "enum": [
+              "valid",
+              "invalid"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/usersGetResponseSuccess"
+            }
+          },
+          "500": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/usersGetResponseError"
+            }
+          }
+        }
+      }
+    },
+    "/users/{dbid}": {
+      "put": {
+        "tags": [
+          "users"
+        ],
+        "description": "This operation will update the specified CfgPerson object in configuration server. Almost the same set of attributes as \"POST\".",
+        "operationId": "usersPut",
+        "parameters": [
+          {
+            "name": "dbid",
+            "in": "path",
+            "description": "User DBID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Body Data",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/usersPut"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/usersPutResponseStatusSuccess"
+            }
+          },
+          "500": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/usersPutResponseError"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "users"
+        ],
+        "description": "This operation will delete the specified CfgPerson and connected with it CfgAgentLogin, CfgPlace, CfgDN objects in configuration server.",
+        "operationId": "usersDelete",
+        "parameters": [
+          {
+            "name": "dbid",
+            "in": "path",
+            "description": "User DBID",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/usersDeleteResponseSuccess"
+            }
+          },
+          "500": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/usersDeleteResponseError"
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "description": "The GET operation will fetch specified CfgPerson object from configuration server",
+        "operationId": "usersGet",
+        "parameters": [
+          {
+            "name": "dbid",
+            "in": "path",
+            "description": "User DBID or string 'me'",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/usersGetResponseSuccess"
+            }
+          },
+          "500": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/usersGetResponseError"
+            }
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "tags": [
+          "login"
+        ],
+        "description": "The POST operation will create a new sessionId and set default.yml:common.cookieName cookie.\n",
+        "operationId": "loginPost",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Body Data",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/loginPost"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/loginPostResponse"
+            }
+          },
+          "500": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/loginPostResponseError"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "usersPost": {
+      "type": "object",
+      "required": [
+        "userName",
+        "firstName",
+        "lastName",
+        "password"
+      ],
+      "properties": {
+        "changePasswordOnNextLogin": {
+          "description": "if 'true', user will be asked to change password on first login.\n\nEffect: Controls the value of the corresponding CfgPerson attribute\n",
+          "type": "boolean",
+          "default": false
+        },
+        "emailAddress": {
+          "description": "User's email.\n\nEffect: Controls the value of the corresponding CfgPerson attribute\n",
+          "type": "string",
+          "default": "test@email.com"
+        },
+        "employeeID": {
+          "description": "user's Employee ID.\n\nEffect: Controls the value of the corresponding CfgPerson attribute\n",
+          "type": "string",
+          "default": "empid123"
+        },
+        "externalID": {
+          "description": "External ID.\n\nEffect: Controls the value of the corresponding CfgPerson attribute\n",
+          "type": "string",
+          "default": "extid123"
+        },
+        "enabled": {
+          "description": "User is enabled or disabled.\n\nEffect: Controls the value of the corresponding CfgPerson attribute\n",
+          "type": "boolean",
+          "default": true
+        },
+        "userName": {
+          "description": "User unique login.\n\nEffect: Controls the value of the corresponding CfgPerson attribute\n",
+          "type": "string",
+          "default": "username123"
+        },
+        "firstName": {
+          "description": "User's first name.\n\nEffect: Controls the value of the corresponding CfgPerson attribute\n",
+          "type": "string",
+          "default": "firstname123"
+        },
+        "lastName": {
+          "description": "User's last name.\n\nEffect: Controls the value of the corresponding CfgPerson attribute\n",
+          "type": "string",
+          "default": "lastname123"
+        },
+        "loginCode": {
+          "description": "The user's login code.\n\nEffect: A corresponding CfgAgentLogin will be created on all switches in the \"switchNames\" collection. It will then be assigned to the CfgPerson that's being created.\n",
+          "type": "string"
+        },
+        "password": {
+          "description": "Password as plain text.\n\nEffect: Controls the value of the corresponding CfgPerson attribute\n",
+          "type": "string",
+          "default": "usefname123"
+        },
+        "multimediaPlaceName": {
+          "type": "string",
+          "description": "Place name for multimedia-only agents\n"
+        },
+        "placeNames": {
+          "description": "A list of places available to the user (for multimedia only users).\nEffect: The list is written to the current CfgPerson's \"htcc\" annex. e.g. CfgPerson/userProperties/htcc/place = p1, p2, p3\n",
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "string"
+          }
+        },
+        "roles": {
+          "description": "The roles that will be added to the user.\n",
+          "type": "array",
+          "default": [
+            "ROLE_AGENT"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "switchNames": {
+          "description": "The switch names that the user will work on.\n\nEffect: A list of switches where the user's telephony objects will be created (i.e. dns, agent logins)\n",
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "string"
+          }
+        },
+        "phones": {
+          "description": "A list of phone number descriptors used to create the user's DNs.\n\nEffect: For each phone number, a corresponding DN will be created on all of the switches specified by \"switchNames\" and assigned to the specified place.\n",
+          "type": "array",
+          "default": [],
+          "items": {
+            "$ref": "#/definitions/Extension"
+          }
+        },
+        "supportSoftPhone": {
+          "description": "Enable SIP Phone, true/false.\n\nEffect: Writes corresponding information to the TServer annex of the created DNs (see sipPhoneType)\n",
+          "type": "boolean",
+          "default": true
+        },
+        "sipPhoneType": {
+          "description": "Specifies the sip phone typed if supportSoftPhone = true.\n\nEffect: Specifies  the sip phone type and corresponding annex to be written to the DN's \"TServer\" section\n",
+          "type": "string",
+          "default": "Disable CTI",
+          "enum": [
+            "Disable CTI",
+            {
+              "Genesys SoftPhone (sip-cti-control": "talk, hold, dtmf)"
+            },
+            {
+              "Genesys 420HT / AudioCodes 4xxHD (sip-cti-control": "talk, hold)"
+            },
+            {
+              "Generic Phone (sip-cti-control": "talk)"
+            }
+          ]
+        },
+        "skills": {
+          "description": "List of Skills to assign to the user.\n\nEffect: The list contains a collection of skill descriptors. If the corresponding skill is found, it is assigned to the user with the specified level. If it is not found, the skill is created and then assigned.\n",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Skill"
+          },
+          "default": []
+        },
+        "agentGroups": {
+          "description": "List of agent groups that the user should be assigned to.\n\nEffect: The user will be assigned to each group that already exists. If a particular group is not already in the system it will be created.\n",
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "string"
+          }
+        },
+        "accessGroups": {
+          "description": "List of access groups that the user should belong to.\n\nEffect: The user will be assigned to each group that can be located. If a group does not already exist, it will NOT be created.\n",
+          "type": "array",
+          "default": [
+            "Administrators"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "voiceMail": {
+          "description": "User's Voice Mail.\nEffect: Written to the user's CfgAgentLogin.userProperties.TServer.gvm_mailbox\n",
+          "type": "number",
+          "default": 123
+        },
+        "wrapUpTime": {
+          "description": "User's Wrap Up Time.\n\nEffect: Configured for each CfgAgentLogin\n",
+          "type": "string",
+          "default": "123"
+        }
+      }
+    },
+    "usersPostResponse": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "schema": {
+            "$ref": "#/definitions/usersPostResponseStatusSuccess"
+          }
+        }
+      }
+    },
+    "usersPostResponseError": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "schema": {
+            "$ref": "#/definitions/usersPostResponseStatus"
+          }
+        }
+      }
+    },
+    "usersPostResponseStatusSuccess": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "number",
+          "default": 0
+        }
+      }
+    },
+    "usersPostResponseStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "number"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "Extension": {
+      "type": "object",
+      "properties": {
+        "number": {
+          "type": "number",
+          "description": "Phone number"
+        },
+        "description": {
+          "type": "string",
+          "description": "Description (Mobile, Office)"
+        },
+        "isDefault": {
+          "type": "boolean",
+          "description": "true/false"
+        },
+        "placeName": {
+          "type": "string",
+          "description": "Name of the corresponding place name"
+        }
+      }
+    },
+    "Skill": {
+      "type": "object",
+      "properties": {
+        "level": {
+          "type": "number or string",
+          "description": "Skill level. Should be a positive integer number in numeric or string format. If level is equal to '' the skill will be unassigned."
+        },
+        "name": {
+          "type": "string",
+          "description": "Skill name"
+        }
+      }
+    },
+    "usersPut": {
+      "type": "object",
+      "required": [
+        "userName",
+        "firstName",
+        "lastName",
+        "password"
+      ],
+      "properties": {
+        "changePasswordOnNextLogin": {
+          "description": "if 'true', user will be asked to change password on first login.\n\nEffect: Controls the value of the corresponding CfgPerson attribute\n",
+          "type": "boolean"
+        },
+        "emailAddress": {
+          "description": "User's email.\n\nEffect: Controls the value of the corresponding CfgPerson attribute\n",
+          "type": "string"
+        },
+        "employeeID": {
+          "description": "user's Employee ID.\n\nEffect: Controls the value of the corresponding CfgPerson attribute\n",
+          "type": "string"
+        },
+        "externalID": {
+          "description": "External ID.\n\nEffect: Controls the value of the corresponding CfgPerson attribute\n",
+          "type": "string"
+        },
+        "enabled": {
+          "description": "User is enabled or disabled.\n\nEffect: Controls the value of the corresponding CfgPerson attribute\n",
+          "type": "boolean"
+        },
+        "userName": {
+          "description": "User unique login.\nControls the value of the corresponding CfgPerson attribute\n",
+          "type": "string"
+        },
+        "firstName": {
+          "description": "User's first name.\n\nEffect: Controls the value of the corresponding CfgPerson attribute\n",
+          "type": "string"
+        },
+        "lastName": {
+          "description": "User's last name.\n\nEffect: Controls the value of the corresponding CfgPerson attribute\n",
+          "type": "string"
+        },
+        "loginCode": {
+          "description": "The user's login code.\n\nEffect: A corresponding CfgAgentLogin will be created on all switches in the \"switchNames\" collection. It will then be assigned to the CfgPerson that's being modified.\n",
+          "type": "string"
+        },
+        "password": {
+          "description": "Password as plain text.\n\nEffect: Controls the value of the corresponding CfgPerson attribute\n",
+          "type": "string"
+        },
+        "multimediaPlaceName": {
+          "type": "string",
+          "description": "Place name for multimedia-only agents.\n"
+        },
+        "placeNames": {
+          "description": "A list of places available to the user (for multimedia only users).\n\nEffect: The list is written to the current CfgPerson's \"htcc\" annex. e.g. CfgPerson/userProperties/htcc/place = p1, p2, p3\n",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "roles": {
+          "description": "The roles that will be added to the user.\n",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "deletedRoles": {
+          "description": "The roles that will be removed from the user.\n",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "switchNames": {
+          "description": "The switch names that the user will work on.\n\nEffect: A list of switches where the user's telephony objects will be created (i.e. dns, agent logins)\n",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "deletedSwitchNames": {
+          "description": "The switch names that the user will NOT work on.\n\nEffect: A list of switches where the user's telephony objects will NOT be created (i.e. dns, agent logins)\n",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "phones": {
+          "description": "A list of phone number descriptors used to create the user's DNs.\n\nEffect: For each phone number, a corresponding DN will be created on all of the switches specified by \"switchNames\" and assigned to the specified place.\n",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Extension"
+          }
+        },
+        "supportSoftPhone": {
+          "description": "Enable SIP Phone, true/false.\n\nEffect: Writes corresponding information to the TServer annex of the created DNs (see sipPhoneType)\n",
+          "type": "boolean"
+        },
+        "sipPhoneType": {
+          "description": "Specifies the sip phone typed if supportSoftPhone = true.\n\nEffect: Specifies  the sip phone type and corresponding annex to be written to the DN's \"TServer\" section\n",
+          "type": "string",
+          "enum": [
+            "Disable CTI",
+            {
+              "Genesys SoftPhone (sip-cti-control": "talk, hold, dtmf)"
+            },
+            {
+              "Genesys 420HT / AudioCodes 4xxHD (sip-cti-control": "talk, hold)"
+            },
+            {
+              "Generic Phone (sip-cti-control": "talk)"
+            }
+          ]
+        },
+        "skills": {
+          "description": "List of Skills to assign to the user.\n\nEffect: The list contains a collection of skill descriptors. If the corresponding skill is found, it is assigned to the user with the specified level. If it is not found, the skill is created and then assigned.\n",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Skill"
+          }
+        },
+        "deletedSkills": {
+          "description": "List of Skills to delete from the user.\n\nEffect: The list contains a collection of skill descriptors. If the corresponding skill is found, it is deleted from the user with the specified level..\n",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Skill"
+          }
+        },
+        "agentGroups": {
+          "description": "List of agent groups that the user should be assigned to.\n\nEffect: The user will be assigned to each group that already exists. If a particular group is not already in the system it will be created.\n",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "deletedAgentGroups": {
+          "description": "List of agent groups that the user should be deleted from.\n\nEffect: The user will be deleted from each group that already exists.\n",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "accessGroups": {
+          "description": "List of access groups that the user should belong to.\n\nEffect: The user will be assigned to each group that can be located. If a group does not already exist, it will NOT be created.\n",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "deletedAccessGroups": {
+          "description": "List of access groups that the user should be deleted from.\n\nEffect: The user will be deleted from each group that can be located.\n",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "voiceMail": {
+          "description": "User's Voice Mail.\n\nEffect: Written to the user's CfgAgentLogin.userProperties.TServer.gvm_mailbox\n",
+          "type": "number"
+        },
+        "wrapUpTime": {
+          "description": "User's Wrap Up Time.\n\nEffect: Configured for each CfgAgentLogin\n",
+          "type": "string"
+        }
+      }
+    },
+    "usersPutResponseError": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "schema": {
+            "$ref": "#/definitions/usersPutResponseStatus"
+          }
+        }
+      }
+    },
+    "usersPutResponseStatusSuccess": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "number",
+          "default": 0
+        }
+      }
+    },
+    "usersPutResponseStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "number"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "delete": {
+      "type": "object",
+      "properties": {
+        "keep_places": {
+          "description": "if 'true' or absent, user's places and their DNs will not be deleted\n\nEffect: Controls if user's places and their DNs will be deleted\n",
+          "type": "boolean"
+        }
+      }
+    },
+    "usersDeleteResponseSuccess": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "schema": {
+            "$ref": "#/definitions/usersDeleteResponseStatusSuccess"
+          }
+        }
+      }
+    },
+    "usersDeleteResponseError": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "schema": {
+            "$ref": "#/definitions/usersDeleteResponseStatusError"
+          }
+        }
+      }
+    },
+    "usersDeleteResponseStatusSuccess": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "number",
+          "default": 0
+        }
+      }
+    },
+    "usersDeleteResponseStatusError": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "number"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "usersGetResponseSuccess": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "schema": {
+            "$ref": "#/definitions/usersGetResponseStatusSuccess"
+          }
+        }
+      }
+    },
+    "usersGetResponseError": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "schema": {
+            "$ref": "#/definitions/usersGetResponseStatusError"
+          }
+        }
+      }
+    },
+    "usersGetResponseStatusSuccess": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "number"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "users": {
+              "type": "array",
+              "description": "List of user objects fetched if dbid parameter is absent.",
+              "items": {
+                "type": "object"
+              }
+            },
+            "user": {
+              "type": "object",
+              "description": "List of user objects fetched if dbid parameter is present."
+            },
+            "totalCount": {
+              "type": "number",
+              "description": "Total number of users. Available if dbid parameter is absent."
+            },
+            "usedSkillsDBIDs": {
+              "type": "array",
+              "description": "DBIDs of skills used by the users found. Available if dbid parameter is absent.",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "usersGetResponseStatusError": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "number"
+        },
+        "message": {
+          "type": "string",
+          "description": "Message describing error"
+        }
+      }
+    },
+    "loginPost": {
+      "type": "object",
+      "required": [
+        "domain_username",
+        "password"
+      ],
+      "properties": {
+        "domain_username": {
+          "default": "domain.com\\login",
+          "description": "User unique login in form: domain.com\\login\n\nEffect: Controls the value of the corresponding CfgPerson attribute\n",
+          "type": "string"
+        },
+        "password": {
+          "default": "password",
+          "description": "Password as plain text.\n\nEffect: Controls the value of the corresponding CfgPerson attribute\n",
+          "type": "string"
+        }
+      }
+    },
+    "loginPostResponse": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "integer",
+              "description": "Zero integer indicating success"
+            }
+          }
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "sessionId": {
+              "type": "string",
+              "description": "Generated session ID"
+            }
+          }
+        }
+      }
+    },
+    "loginPostResponseError": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "integer",
+              "description": "Error code"
+            },
+            "message": {
+              "type": "string",
+              "description": "Error message"
+            }
+          }
+        }
+      }
+    }
+  },
+  "responses": {},
+  "parameters": {}
+}
