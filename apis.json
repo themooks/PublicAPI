@@ -23,6 +23,22 @@
     	"cloud": true,
     	"premise": true,
     	"product": "Genesys Mobile Engagement"
+    },
+    {
+    	"name": "CXEngagement",
+    	"description": "Customer Engagement API",
+    	"swagger": "CXEngagement/swagger.json",
+    	"cloud": true,
+    	"premise": true,
+    	"product": "Genesys Mobile Engagement"
+    },
+    {
+    	"name": "Provisioning v3",
+    	"description": "Provisioning v3 API",
+    	"swagger": "ProvisioningV3/swagger.json",
+    	"cloud": true,
+    	"premise": true,
+    	"product": "Agent Setup"
     }
   ]
 }

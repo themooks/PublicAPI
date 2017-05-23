@@ -1,0 +1,1842 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "Genesys Mobile Services contains multiple APIs, each dedicated to performing certain tasks as described below. Select the API name for a more detailed examination of the operations and responses they use.",
+    "version": "v2",
+    "title": "Customer Engagement API",
+    "termsOfService": "https://developer.genesys.com/api/tos/",
+    "contact": {
+      "name": "PureEngage Developer Support",
+      "url": "https://developer.genesys.com",
+      "email": "DeveloperSupport@genesys.com"
+    },
+    "license": {
+      "name": "Genesys",
+      "url": "http://www.genesys.com"
+    }
+  },
+  "host": "api.mypureengage.com",
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "securityDefinitions": {
+    "api_key": {
+      "type": "apiKey",
+      "name": "x-api-key",
+      "description": "API access key supplied by Genesys for specific environment",
+      "in": "header"
+    }
+  },
+  "tags": [
+    {
+      "name": "Email",
+      "description": "Customer Facing - Email API\n\n",
+      "externalDocs": {
+        "description": "GMS Email API Documentation",
+        "url": "https://docs.genesys.com/Documentation/GMS/latest/API/EmailAPI"
+      }
+    },
+    {
+      "name": "ChatV2",
+      "description": "Customer Facing - Chat V2 API\n\nUse this API for Web Chat (replacement for eServices WebAPI Chat).\n",
+      "externalDocs": {
+        "description": "GMS Chat v2 API Documentation",
+        "url": "https://docs.genesys.com/Documentation/GMS/latest/API/ChatAPIv2"
+      }
+    },
+    {
+      "name": "Capacity",
+      "description": "Customer Facing - Capacity API\n\nThe Capacity Service enables you to define the number of scheduled callbacks that are allowed for Callback for a given time slot in the week. Then, your Callback service refers to your Capacity service and to your Office Hours service to adjust the agent availability and the number of scheduled callbacks.\nYou can define exceptions for dates where less or more agents are available, and you can define as many Capacity services that you need to match your Callback services. This way, you can address the agent workload according to the real resources that are available.\n",
+      "externalDocs": {
+        "description": "GMS Capacity API Documentation",
+        "url": "https://docs.genesys.com/Documentation/GMS/latest/API/CapacityAPI"
+      }
+    },
+    {
+      "name": "CalendarService",
+      "description": "Customer Facing - CalendarService API\n\nThe Calendar Service API queries for all office hours so that your mobile app can make an intelligent first offer to the user based on what’s available in the next couple days, or with an explanatory hint such as \"Our offices are open from 8:00 am to 5:00 pm, please enter the desired time.\".\n ",
+      "externalDocs": {
+        "description": "GMS CalendarService API Documentation",
+        "url": "https://docs.genesys.com/Documentation/GMS/latest/API/CalendarServiceAPI"
+      }
+    },
+    {
+      "name": "PhoneNumberValidation",
+      "description": "Customer Facing - PhoneNumberValidation API\n\nThis Phone Number Validation API wraps the Google's common Java, C++ and JavaScript library for the purposes of parsing, formatting, and validating international phone numbers.\n",
+      "externalDocs": {
+        "description": "GMS PhoneNumberValidation API Documentation",
+        "url": "https://docs.genesys.com/Documentation/GMS/latest/API/PhoneNumberValidationAPI"
+      }
+    }
+  ],
+  "paths": {
+    "/genesys/2/email": {
+      "post": {
+        "tags": [
+          "Email"
+        ],
+        "summary": "Send Email",
+        "description": "Send an Email to the Contact Center",
+        "operationId": "sendEmail",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "firstName",
+            "in": "formData",
+            "type": "string",
+            "description": "User's first name.",
+            "required": true
+          },
+          {
+            "name": "lastName",
+            "in": "formData",
+            "type": "string",
+            "description": "User's last name.",
+            "required": true
+          },
+          {
+            "name": "fromAddress",
+            "in": "formData",
+            "type": "string",
+            "description": "User's email address.",
+            "required": true
+          },
+          {
+            "name": "subject",
+            "in": "formData",
+            "type": "string",
+            "description": "Email's subject.",
+            "required": true
+          },
+          {
+            "name": "text",
+            "in": "formData",
+            "type": "string",
+            "description": "Email's body.",
+            "required": true
+          },
+          {
+            "name": "mailbox",
+            "in": "formData",
+            "type": "string",
+            "description": "Force destination email address.",
+            "required": false
+          },
+          {
+            "name": "userData",
+            "in": "formData",
+            "type": "array",
+            "description": "Key/Value pair to be attached as User Data.",
+            "collectionFormat": "multi",
+            "uniqueItems": true,
+            "items": {
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "name": "files",
+            "in": "formData",
+            "type": "file",
+            "description": "Email's Attached document.",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request Processed",
+            "schema": {
+              "$ref": "#/definitions/EmailApiResponse"
+            }
+          },
+          "400": {
+            "description": "Validation Error",
+            "schema": {
+              "$ref": "#/definitions/ApiValidationError"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/genesys/2/chat/{serviceName}": {
+      "post": {
+        "tags": [
+          "ChatV2"
+        ],
+        "summary": "Request Chat Session",
+        "description": "Request a Chat Session with the Contact Center",
+        "operationId": "requestChatSession",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "serviceName",
+            "in": "path",
+            "type": "string",
+            "description": "Chat Service Name.",
+            "required": true
+          },
+          {
+            "name": "nickname",
+            "in": "formData",
+            "type": "string",
+            "description": "User's nickname.",
+            "required": true
+          },
+          {
+            "name": "firstName",
+            "in": "formData",
+            "type": "string",
+            "description": "User's first name.",
+            "required": true
+          },
+          {
+            "name": "lastName",
+            "in": "formData",
+            "type": "string",
+            "description": "User's last name.",
+            "required": true
+          },
+          {
+            "name": "subject",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat's subject.",
+            "required": false
+          },
+          {
+            "name": "emailAddress",
+            "in": "formData",
+            "type": "string",
+            "description": "User's email address.",
+            "required": false
+          },
+          {
+            "name": "userData[key1]",
+            "in": "formData",
+            "type": "string",
+            "description": "UserData with Keyname Key1",
+            "required": false
+          },
+          {
+            "name": "userData[key2]",
+            "in": "formData",
+            "type": "string",
+            "description": "UserData with Keyname Key2",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request Processed",
+            "schema": {
+              "$ref": "#/definitions/ChatApiResponse"
+            }
+          },
+          "400": {
+            "description": "Validation Error",
+            "schema": {
+              "$ref": "#/definitions/ApiValidationError"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/genesys/2/chat/{serviceName}/{chatId}/send": {
+      "post": {
+        "tags": [
+          "ChatV2"
+        ],
+        "summary": "Send Chat Message",
+        "description": "Send a message in a Chat session",
+        "operationId": "sendMessage",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "serviceName",
+            "in": "path",
+            "type": "string",
+            "description": "Chat Service Name.",
+            "required": true
+          },
+          {
+            "name": "chatId",
+            "in": "path",
+            "type": "string",
+            "description": "Chat Id.",
+            "required": true
+          },
+          {
+            "name": "userId",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat User Id.",
+            "required": true
+          },
+          {
+            "name": "secureKey",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat Secure Key.",
+            "required": true
+          },
+          {
+            "name": "alias",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat Alias.",
+            "required": true
+          },
+          {
+            "name": "message",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat Send Message.",
+            "required": true
+          },
+          {
+            "name": "messageType",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat Message Type.",
+            "required": false
+          },
+          {
+            "name": "transcriptPosition",
+            "in": "formData",
+            "type": "integer",
+            "description": "Chat Transcript Position.",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request Processed",
+            "schema": {
+              "$ref": "#/definitions/ChatApiResponse"
+            }
+          },
+          "400": {
+            "description": "Validation Error",
+            "schema": {
+              "$ref": "#/definitions/ApiValidationError"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/genesys/2/chat/{serviceName}/{chatId}/startTyping": {
+      "post": {
+        "tags": [
+          "ChatV2"
+        ],
+        "summary": "Send Start Typing Notification",
+        "description": "Send a Start Typing notification in a Chat session",
+        "operationId": "notifyStartTyping",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "serviceName",
+            "in": "path",
+            "type": "string",
+            "description": "Chat Service Name.",
+            "required": true
+          },
+          {
+            "name": "chatId",
+            "in": "path",
+            "type": "string",
+            "description": "Chat Id.",
+            "required": true
+          },
+          {
+            "name": "userId",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat User Id.",
+            "required": true
+          },
+          {
+            "name": "secureKey",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat Secure Key.",
+            "required": true
+          },
+          {
+            "name": "alias",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat Alias.",
+            "required": true
+          },
+          {
+            "name": "message",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat Message.",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request Processed",
+            "schema": {
+              "$ref": "#/definitions/ChatApiResponse"
+            }
+          },
+          "400": {
+            "description": "Validation Error",
+            "schema": {
+              "$ref": "#/definitions/ApiValidationError"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/genesys/2/chat/{serviceName}/{chatId}/stopTyping": {
+      "post": {
+        "tags": [
+          "ChatV2"
+        ],
+        "summary": "Send Stop Typing Notification",
+        "description": "Send a Stop Typing notification in a Chat session",
+        "operationId": "notifyStopTyping",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "serviceName",
+            "in": "path",
+            "type": "string",
+            "description": "Chat Service Name.",
+            "required": true
+          },
+          {
+            "name": "chatId",
+            "in": "path",
+            "type": "string",
+            "description": "Chat Id.",
+            "required": true
+          },
+          {
+            "name": "userId",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat User Id.",
+            "required": true
+          },
+          {
+            "name": "secureKey",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat Secure Key.",
+            "required": true
+          },
+          {
+            "name": "alias",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat Alias.",
+            "required": true
+          },
+          {
+            "name": "message",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat Message.",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request Processed",
+            "schema": {
+              "$ref": "#/definitions/ChatApiResponse"
+            }
+          },
+          "400": {
+            "description": "Validation Error",
+            "schema": {
+              "$ref": "#/definitions/ApiValidationError"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/genesys/2/chat/{serviceName}/{chatId}/refresh": {
+      "post": {
+        "tags": [
+          "ChatV2"
+        ],
+        "summary": "Refresh Chat Session",
+        "description": "Send a request to obtain Chat Session transcript of events.",
+        "operationId": "refreshChatSession",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "serviceName",
+            "in": "path",
+            "type": "string",
+            "description": "Chat Service Name.",
+            "required": true
+          },
+          {
+            "name": "chatId",
+            "in": "path",
+            "type": "string",
+            "description": "Chat Id.",
+            "required": true
+          },
+          {
+            "name": "userId",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat User Id.",
+            "required": true
+          },
+          {
+            "name": "secureKey",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat Secure Key.",
+            "required": true
+          },
+          {
+            "name": "alias",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat Alias.",
+            "required": true
+          },
+          {
+            "name": "transcriptPosition",
+            "in": "formData",
+            "type": "integer",
+            "description": "Chat Transcript Position.",
+            "required": false
+          },
+          {
+            "name": "message",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat Message.",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request Processed",
+            "schema": {
+              "$ref": "#/definitions/ChatApiResponse"
+            }
+          },
+          "400": {
+            "description": "Validation Error",
+            "schema": {
+              "$ref": "#/definitions/ApiValidationError"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/genesys/2/chat/{serviceName}/{chatId}/disconnect": {
+      "post": {
+        "tags": [
+          "ChatV2"
+        ],
+        "summary": "Disconnect Chat Session",
+        "description": "Disconnect Chat Session.",
+        "operationId": "disconnectChatSession",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "serviceName",
+            "in": "path",
+            "type": "string",
+            "description": "Chat Service Name.",
+            "required": true
+          },
+          {
+            "name": "chatId",
+            "in": "path",
+            "type": "string",
+            "description": "Chat Id.",
+            "required": true
+          },
+          {
+            "name": "userId",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat User Id.",
+            "required": true
+          },
+          {
+            "name": "secureKey",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat Secure Key.",
+            "required": true
+          },
+          {
+            "name": "alias",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat Alias.",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request Processed",
+            "schema": {
+              "$ref": "#/definitions/ChatApiResponse"
+            }
+          },
+          "400": {
+            "description": "Validation Error",
+            "schema": {
+              "$ref": "#/definitions/ApiValidationError"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/genesys/2/chat/{serviceName}/{chatId}/pushUrl": {
+      "post": {
+        "tags": [
+          "ChatV2"
+        ],
+        "summary": "Push URL",
+        "description": "Push a URL in a Chat session",
+        "operationId": "pushUrl",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "serviceName",
+            "in": "path",
+            "type": "string",
+            "description": "Chat Service Name.",
+            "required": true
+          },
+          {
+            "name": "chatId",
+            "in": "path",
+            "type": "string",
+            "description": "Chat Id.",
+            "required": true
+          },
+          {
+            "name": "userId",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat User Id.",
+            "required": true
+          },
+          {
+            "name": "secureKey",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat Secure Key.",
+            "required": true
+          },
+          {
+            "name": "alias",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat Alias.",
+            "required": true
+          },
+          {
+            "name": "pushUrl",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat Push URL.",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request Processed",
+            "schema": {
+              "$ref": "#/definitions/ChatApiResponse"
+            }
+          },
+          "400": {
+            "description": "Validation Error",
+            "schema": {
+              "$ref": "#/definitions/ApiValidationError"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/genesys/2/chat/{serviceName}/{chatId}/updateNickname": {
+      "post": {
+        "tags": [
+          "ChatV2"
+        ],
+        "summary": "Update Nickname",
+        "description": "Update Nickname in a Chat session",
+        "operationId": "updateNickname",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "serviceName",
+            "in": "path",
+            "type": "string",
+            "description": "Chat Service Name.",
+            "required": true
+          },
+          {
+            "name": "chatId",
+            "in": "path",
+            "type": "string",
+            "description": "Chat Id.",
+            "required": true
+          },
+          {
+            "name": "userId",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat User Id.",
+            "required": true
+          },
+          {
+            "name": "secureKey",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat Secure Key.",
+            "required": true
+          },
+          {
+            "name": "alias",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat Alias.",
+            "required": true
+          },
+          {
+            "name": "nickname",
+            "in": "formData",
+            "type": "string",
+            "description": "User's nickname.",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request Processed",
+            "schema": {
+              "$ref": "#/definitions/ChatApiResponse"
+            }
+          },
+          "400": {
+            "description": "Validation Error",
+            "schema": {
+              "$ref": "#/definitions/ApiValidationError"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/genesys/2/chat/{serviceName}/{chatId}/customNotice": {
+      "post": {
+        "tags": [
+          "ChatV2"
+        ],
+        "summary": "Send Chat Notice",
+        "description": "Send a notice in a Chat session",
+        "operationId": "sendNotice",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "serviceName",
+            "in": "path",
+            "type": "string",
+            "description": "Chat Service Name.",
+            "required": true
+          },
+          {
+            "name": "chatId",
+            "in": "path",
+            "type": "string",
+            "description": "Chat Id.",
+            "required": true
+          },
+          {
+            "name": "userId",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat User Id.",
+            "required": true
+          },
+          {
+            "name": "secureKey",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat Secure Key.",
+            "required": true
+          },
+          {
+            "name": "alias",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat Alias.",
+            "required": true
+          },
+          {
+            "name": "message",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat Notice.",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request Processed",
+            "schema": {
+              "$ref": "#/definitions/ChatApiResponse"
+            }
+          },
+          "400": {
+            "description": "Validation Error",
+            "schema": {
+              "$ref": "#/definitions/ApiValidationError"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/genesys/2/chat/{serviceName}/{chatId}/updateData": {
+      "post": {
+        "tags": [
+          "ChatV2"
+        ],
+        "summary": "Update User Data",
+        "description": "Update User Data in a Chat session",
+        "operationId": "updateUserData",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "serviceName",
+            "in": "path",
+            "type": "string",
+            "description": "Chat Service Name.",
+            "required": true
+          },
+          {
+            "name": "chatId",
+            "in": "path",
+            "type": "string",
+            "description": "Chat Id.",
+            "required": true
+          },
+          {
+            "name": "userId",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat User Id.",
+            "required": true
+          },
+          {
+            "name": "secureKey",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat Secure Key.",
+            "required": true
+          },
+          {
+            "name": "alias",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat Alias.",
+            "required": true
+          },
+          {
+            "name": "userData[key1]",
+            "in": "formData",
+            "type": "string",
+            "description": "UserData with Keyname Key1",
+            "required": false
+          },
+          {
+            "name": "userData[key2]",
+            "in": "formData",
+            "type": "string",
+            "description": "UserData with Keyname Key2",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request Processed",
+            "schema": {
+              "$ref": "#/definitions/ChatApiResponse"
+            }
+          },
+          "400": {
+            "description": "Validation Error",
+            "schema": {
+              "$ref": "#/definitions/ApiValidationError"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/genesys/2/chat/{serviceName}/{chatId}/file/limits": {
+      "post": {
+        "tags": [
+          "ChatV2"
+        ],
+        "summary": "Get File Limits",
+        "description": "Get File Limits in a Chat session",
+        "operationId": "getFileLimits",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "serviceName",
+            "in": "path",
+            "type": "string",
+            "description": "Chat Service Name.",
+            "required": true
+          },
+          {
+            "name": "chatId",
+            "in": "path",
+            "type": "string",
+            "description": "Chat Id.",
+            "required": true
+          },
+          {
+            "name": "userId",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat User Id.",
+            "required": true
+          },
+          {
+            "name": "secureKey",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat Secure Key.",
+            "required": true
+          },
+          {
+            "name": "alias",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat Alias.",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request Processed",
+            "schema": {
+              "$ref": "#/definitions/ChatApiResponse"
+            }
+          },
+          "400": {
+            "description": "Validation Error",
+            "schema": {
+              "$ref": "#/definitions/ApiValidationError"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/genesys/2/chat/{serviceName}/{chatId}/file": {
+      "post": {
+        "tags": [
+          "ChatV2"
+        ],
+        "summary": "Updload File",
+        "description": "Upload File in a Chat session",
+        "operationId": "uploadFile",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "serviceName",
+            "in": "path",
+            "type": "string",
+            "description": "Chat Service Name.",
+            "required": true
+          },
+          {
+            "name": "chatId",
+            "in": "path",
+            "type": "string",
+            "description": "Chat Id.",
+            "required": true
+          },
+          {
+            "name": "userId",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat User Id.",
+            "required": true
+          },
+          {
+            "name": "secureKey",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat Secure Key.",
+            "required": true
+          },
+          {
+            "name": "alias",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat Alias.",
+            "required": true
+          },
+          {
+            "name": "file",
+            "in": "formData",
+            "type": "file",
+            "description": "File",
+            "required": true
+          },
+          {
+            "name": "userData[file-description]",
+            "in": "formData",
+            "type": "file",
+            "description": "File Description",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request Processed",
+            "schema": {
+              "$ref": "#/definitions/ChatApiResponse"
+            }
+          },
+          "400": {
+            "description": "Validation Error",
+            "schema": {
+              "$ref": "#/definitions/ApiValidationError"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/genesys/2/chat/{serviceName}/{chatId}/file/{fileId}/download": {
+      "post": {
+        "tags": [
+          "ChatV2"
+        ],
+        "summary": "Download File",
+        "description": "Download File in a Chat session",
+        "operationId": "downloadFile",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "produces": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "name": "serviceName",
+            "in": "path",
+            "type": "string",
+            "description": "Chat Service Name.",
+            "required": true
+          },
+          {
+            "name": "chatId",
+            "in": "path",
+            "type": "string",
+            "description": "Chat Id.",
+            "required": true
+          },
+          {
+            "name": "fileId",
+            "in": "path",
+            "type": "string",
+            "description": "Chat File Id.",
+            "required": true
+          },
+          {
+            "name": "userId",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat User Id.",
+            "required": true
+          },
+          {
+            "name": "secureKey",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat Secure Key.",
+            "required": true
+          },
+          {
+            "name": "alias",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat Alias.",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request Processed",
+            "schema": {
+              "$ref": "#/definitions/ChatApiResponse"
+            }
+          },
+          "400": {
+            "description": "Validation Error",
+            "schema": {
+              "$ref": "#/definitions/ApiValidationError"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/genesys/2/chat/{serviceName}/{chatId}/file/{fileId}/delete": {
+      "post": {
+        "tags": [
+          "ChatV2"
+        ],
+        "summary": "Delete File",
+        "description": "Delete File in a Chat session",
+        "operationId": "deleteFile",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "serviceName",
+            "in": "path",
+            "type": "string",
+            "description": "Chat Service Name.",
+            "required": true
+          },
+          {
+            "name": "chatId",
+            "in": "path",
+            "type": "string",
+            "description": "Chat Id.",
+            "required": true
+          },
+          {
+            "name": "fileId",
+            "in": "path",
+            "type": "string",
+            "description": "Chat File Id.",
+            "required": true
+          },
+          {
+            "name": "userId",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat User Id.",
+            "required": true
+          },
+          {
+            "name": "secureKey",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat Secure Key.",
+            "required": true
+          },
+          {
+            "name": "alias",
+            "in": "formData",
+            "type": "string",
+            "description": "Chat Alias.",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request Processed",
+            "schema": {
+              "$ref": "#/definitions/ChatApiResponse"
+            }
+          },
+          "400": {
+            "description": "Validation Error",
+            "schema": {
+              "$ref": "#/definitions/ApiValidationError"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/genesys/1/service/{serviceName}": {
+      "get": {
+        "tags": [
+          "Capacity"
+        ],
+        "summary": "Get Capacity",
+        "description": "To find the available capacity, the query provides a date and time range. The response object provides a list of time periods and available capacity for each period. Here is a list of input parameters.",
+        "operationId": "getCapacity",
+        "consumes": [],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "serviceName",
+            "in": "path",
+            "type": "string",
+            "description": "Name of the Capacity Service (capacity)",
+            "required": true
+          },
+          {
+            "name": "start",
+            "in": "query",
+            "type": "string",
+            "description": "Start date and time in ISO-8601 format without a timezone component; for example: 2015-03-17T09:15:00.000",
+            "required": true
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "type": "string",
+            "description": "End date and time in ISO-8601 format without a timezone component; for example: 2015-03-17T12:45:00.000",
+            "required": true
+          },
+          {
+            "name": "timezone",
+            "in": "query",
+            "type": "string",
+            "description": "Timezone used for \"start\" and \"end\" parameters; for example: America/Los_Angeles",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request Processed",
+            "schema": {
+              "$ref": "#/definitions/CapacityApiResponse"
+            }
+          },
+          "400": {
+            "description": "Request Error",
+            "schema": {
+              "$ref": "#/definitions/ApiRequestError"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "CalendarService"
+        ],
+        "summary": "Get Calendar Office Hours",
+        "description": "Retrieve the office hours per day for a provided period.",
+        "operationId": "getCalendar",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "serviceName",
+            "in": "path",
+            "type": "string",
+            "description": "Name of the Calendar Service (calendar)",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Body Data",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/calendarPost"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request Processed",
+            "schema": {
+              "$ref": "#/definitions/CalendarServiceApiResponse"
+            }
+          },
+          "400": {
+            "description": "Request Error",
+            "schema": {
+              "$ref": "#/definitions/ApiRequestError"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    },
+    "/genesys/1/phonenumber": {
+      "get": {
+        "tags": [
+          "PhoneNumberValidation"
+        ],
+        "summary": "Validate Phone Number",
+        "description": "Parse, format, and validate international phone numbers.",
+        "operationId": "validatePhoneNumber",
+        "consumes": [],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "number",
+            "in": "query",
+            "type": "string",
+            "description": "Phone number to validate. For example, 0604120405.",
+            "required": true
+          },
+          {
+            "name": "country",
+            "in": "query",
+            "type": "string",
+            "description": "Two-letter country code as defined in ISO 3166. If you do not specify country in your query, US will be used by default to parse the phone number.",
+            "required": false
+          },
+          {
+            "name": "geocodingLocale",
+            "in": "query",
+            "type": "string",
+            "description": "Language used for displaying the area descriptions.",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request Processed",
+            "schema": {
+              "$ref": "#/definitions/PhoneNumberValidationApiResponse"
+            }
+          },
+          "400": {
+            "description": "Request Error",
+            "schema": {
+              "$ref": "#/definitions/ApiRequestError"
+            }
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "KeyValuePair": {
+      "type": "object"
+    },
+    "ChatParticipant": {
+      "type": "object",
+      "properties": {
+        "nickname": {
+          "type": "string"
+        },
+        "participantId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "Client",
+            "Agent",
+            "Supervisor",
+            "External",
+            "System"
+          ]
+        }
+      }
+    },
+    "ChatTranscriptEvent": {
+      "type": "object",
+      "properties": {
+        "from": {
+          "$ref": "#/definitions/ChatParticipant"
+        },
+        "index": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "type": {
+          "type": "string"
+        },
+        "utcTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "text": {
+          "type": "string"
+        },
+        "messageType": {
+          "type": "string"
+        }
+      }
+    },
+    "ChatApiResponse": {
+      "type": "object",
+      "properties": {
+        "statusCode": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "chatId": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "string"
+        },
+        "secureKey": {
+          "type": "string"
+        },
+        "alias": {
+          "type": "string"
+        },
+        "chatEnded": {
+          "type": "boolean",
+          "default": false
+        },
+        "tenantName": {
+          "type": "string",
+          "default": ""
+        },
+        "nextPosition": {
+          "type": "integer",
+          "default": 0
+        },
+        "messages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ChatTranscriptEvent"
+          }
+        },
+        "userData": {
+          "type": "object"
+        }
+      }
+    },
+    "EmailApiResponse": {
+      "type": "object",
+      "properties": {
+        "statusCode": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "interactionId": {
+          "type": "string"
+        }
+      }
+    },
+    "CapacitySlotItem": {
+      "type": "object",
+      "properties": {
+        "utcTime": {
+          "type": "string",
+          "description": ""
+        },
+        "localTime": {
+          "type": "string",
+          "description": ""
+        },
+        "capacity": {
+          "type": "integer",
+          "description": ""
+        }
+      }
+    },
+    "CapacityApiResponse": {
+      "type": "object",
+      "properties": {
+        "slots": {
+          "description": "Available Slots.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CapacitySlotItem"
+          }
+        },
+        "timezone": {
+          "description": "Selected Timezone.",
+          "type": "string"
+        }
+      }
+    },
+    "PhoneNumberValidationApiResponse": {
+      "type": "object",
+      "properties": {
+        "language-specified": {
+          "description": "Specified language set in the geocodingLocale request parameter.",
+          "type": "string"
+        },
+        "number-specified": {
+          "description": "Validated number.",
+          "type": "string"
+        },
+        "country-default": {
+          "description": "Specified or default country used for the response.",
+          "type": "string"
+        },
+        "country-code": {
+          "description": "Country code part; for example, 33 for France.",
+          "type": "string"
+        },
+        "region-code": {
+          "description": "he region where the phone number is originating from.",
+          "type": "string"
+        },
+        "country-code-source": {
+          "description": "Information used to detect country code.",
+          "type": "string",
+          "enum": [
+            "FROM_NUMBER_WITH_PLUS_SIGN",
+            "FROM_NUMBER_WITH_IDD",
+            "FROM_NUMBER_WITHOUT_PLUS_SIGN",
+            "FROM_DEFAULT_COUNTRY"
+          ]
+        },
+        "extension": {
+          "description": "Extension part.",
+          "type": "string"
+        },
+        "number-national-short": {
+          "description": "Short number for country. For example, 604120405 for a French mobile number.",
+          "type": "string"
+        },
+        "number-national": {
+          "description": "Number formatted using the national format.",
+          "type": "string"
+        },
+        "number-E164": {
+          "description": "Number formatted using the E.164 format.",
+          "type": "string"
+        },
+        "number-original": {
+          "description": "Number formatted using the original phone number format that was parsed.",
+          "type": "string"
+        },
+        "number-international": {
+          "description": "Number formatted using the international format.",
+          "type": "string"
+        },
+        "is-possible-number": {
+          "description": "true if the number looks valid from considering the length information.",
+          "type": "string"
+        },
+        "is-valid-number": {
+          "description": "true if the number looks valid from considering the length and prefix information.",
+          "type": "string"
+        },
+        "is-premium": {
+          "description": "In case of a valid number, true if the number is a premium rate number.",
+          "type": "string"
+        },
+        "italian-leading-zero": {
+          "description": "In case of an Italian number, true if the number has leading zero.",
+          "type": "string"
+        },
+        "number-type": {
+          "description": "Type of the number based on the number parsing to determine if the number matches Fixed-line, Mobile, Toll-free, Premium Rate, Shared Cost, VoIP, and Personal Numbers (whenever feasible).",
+          "type": "string",
+          "enum": [
+            "UNKNOWN",
+            "FIXED_LINE",
+            "MOBILE",
+            "FIXED_LINE_OR_MOBILE",
+            "TOLL_FREE",
+            "PREMIUM_RATE",
+            "SHARED_COST",
+            "VOIP",
+            "PERSONAL_NUMBER",
+            "PAGER",
+            "UAN",
+            "VOICEMAIL"
+          ]
+        },
+        "location": {
+          "description": "Geographical information related to a phone number.",
+          "type": "string"
+        },
+        "time-zone": {
+          "description": "Geographical time information related to a phone number.",
+          "type": "string"
+        },
+        "carrier": {
+          "description": "Carrier information related to a phone number.",
+          "type": "string"
+        },
+        "is-possible-short-number": {
+          "description": "If the number is impossible or invalid, might return information on a possible usage as a short number.",
+          "type": "string"
+        },
+        "is-valid-short-number": {
+          "description": "When number is not possible short number, might return info on valid usage as short number.",
+          "type": "string"
+        },
+        "is-possible-number-with-reason": {
+          "description": "When the number is impossible, gives the reason why.",
+          "type": "string"
+        }
+      }
+    },
+    "calendarPost": {
+      "type": "object",
+      "properties": {
+        "start": {
+          "description": "Start date is specified in \"ISO 8601\" format, using UTC as timezone: \"yyyy-MM-ddTHH:mm:ss.SSSZ\". If not specified then it is assumed to be now.",
+          "type": "string"
+        },
+        "number-of-days": {
+          "description": "Specifies how many days ahead to include into interval beginning form the \"start\" time. Used as an alternative to the end date. If neither \"end\", nor \"number-of-days\" is specified, then end date is assumed to be the same as start date.",
+          "type": "string"
+        },
+        "end": {
+          "description": "End date is specified in \"ISO 8601\" format, using UTC as timezone: \"yyyy-MM-ddTHH:mm:ss.SSSZ\". If neither \"end\", nor \"number-of-days\" is specified, then end date is assumed to be the same as start date.",
+          "type": "string"
+        }
+      }
+    },
+    "CalendarPeriodItem": {
+      "type": "object",
+      "properties": {
+        "start": {
+          "type": "string",
+          "description": ""
+        },
+        "end": {
+          "type": "string",
+          "description": ""
+        },
+        "tags": {
+          "description": "",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/KeyValuePair"
+          }
+        }
+      }
+    },
+    "CalendarServiceApiResponse": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "description": "",
+          "type": "string"
+        },
+        "periods": {
+          "description": "Available Periods.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CalendarPeriodItem"
+          }
+        }
+      }
+    },
+    "ApiValidationErrorItem": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "advice": {
+          "type": "string"
+        }
+      }
+    },
+    "ApiValidationError": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "string"
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ApiValidationErrorItem"
+          }
+        }
+      }
+    },
+    "ApiRequestError": {
+      "type": "object",
+      "properties": {
+        "exception": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "responses": {
+    "400": {
+      "description": "Validation Error",
+      "schema": {
+        "$ref": "#/definitions/ApiValidationError"
+      }
+    }
+  },
+  "externalDocs": {
+    "description": "Find out more about Genesys Mobile Services",
+    "url": "https://docs.genesys.com/Documentation/GMS/8.5.1/API/Welcome"
+  }
+}
